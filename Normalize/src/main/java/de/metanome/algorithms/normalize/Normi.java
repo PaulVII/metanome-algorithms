@@ -19,6 +19,7 @@ import de.metanome.algorithm_integration.AlgorithmConfigurationException;
 import de.metanome.algorithm_integration.AlgorithmExecutionException;
 import de.metanome.algorithm_integration.ColumnIdentifier;
 import de.metanome.algorithm_integration.algorithm_types.BasicStatisticsAlgorithm;
+import de.metanome.algorithm_integration.algorithm_types.BooleanParameterAlgorithm;
 import de.metanome.algorithm_integration.algorithm_types.RelationalInputParameterAlgorithm;
 import de.metanome.algorithm_integration.configuration.ConfigurationRequirement;
 import de.metanome.algorithm_integration.configuration.ConfigurationRequirementRelationalInput;
@@ -40,11 +41,24 @@ import de.metanome.algorithms.normalize.structures.FunctionalDependency;
 import de.metanome.algorithms.normalize.structures.Schema;
 import de.metanome.algorithms.normalize.utils.Utils;
 import de.uni_potsdam.hpi.utils.CollectionUtils;
+import de.metanome.algorithm_integration.configuration.ConfigurationRequirementBoolean;
 
-public class Normi implements BasicStatisticsAlgorithm, RelationalInputParameterAlgorithm {
+public class Normi implements BasicStatisticsAlgorithm, RelationalInputParameterAlgorithm, BooleanParameterAlgorithm
+{
+
+	@Override
+	public void setBooleanConfigurationValue(String identifier, Boolean... values) throws AlgorithmConfigurationException {
+		if (identifier.equals(Identifier.isHumanInTheLoop.name())) {
+			this.isHumanInTheLoop = values[0];
+		}
+		else {
+			throw new AlgorithmConfigurationException("Unknown boolean configuration value: " + identifier);
+		}
+	}
 
 	public enum Identifier {
-		INPUT_GENERATOR
+		INPUT_GENERATOR,
+		isHumanInTheLoop,
 	};
 
 	private String tableName;
@@ -83,7 +97,13 @@ public class Normi implements BasicStatisticsAlgorithm, RelationalInputParameter
 	public ArrayList<ConfigurationRequirement<?>> getConfigurationRequirements() {
 		ArrayList<ConfigurationRequirement<?>> configs = new ArrayList<ConfigurationRequirement<?>>(1);
 		configs.add(new ConfigurationRequirementRelationalInput(Normi.Identifier.INPUT_GENERATOR.name()));
-		
+
+
+		ConfigurationRequirementBoolean isHumanInTheLoop = new ConfigurationRequirementBoolean(Identifier.isHumanInTheLoop.name());
+		Boolean[] defaultIsHumanInTheLoop = new Boolean[1];
+		defaultIsHumanInTheLoop[0] = false;
+		isHumanInTheLoop.setDefaultValues(defaultIsHumanInTheLoop);
+		configs.add(isHumanInTheLoop);
 		return configs;
 	}
 
