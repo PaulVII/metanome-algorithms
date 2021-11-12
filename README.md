@@ -1,5 +1,5 @@
 Note: this is a fork of metanome-algorithms which enables us to use Normalize in interactive mode from the command line. Add `--algorithm-config isHumanInTheLoop:True
-` to your metanome-cli call to use this
+` to your metanome-cli call to use this.
 To build just normalize, use `mvn install -pl Normalize`
 
 # Metanome Algorithm Repository
